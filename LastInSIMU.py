@@ -1,5 +1,20 @@
 import numpty as np
 
+'''シュミレーション設定'''
+
+grid_n=0
+'''分割数(n*n*n)'''
+SimuTime=0
+'''シュミレーションする現実時間[s]'''
+Dleng_X=0
+Dleng_Y=0
+Dleng_Z=0
+'''各軸方向のメッシュ間の距離[cm]'''
+DT=0
+'''微小時間[s]'''
+
+
+
 
 '''各種物性値'''
 
@@ -14,20 +29,6 @@ Density_InN=0
 Density_GaN=0
 ''' InN,GaNの密度[g/cm3]'''
 
-
-
-'''シュミレーション設定'''
-
-grid_n=0
-'''分割数(n*n*n)'''
-SimuTime=0
-'''シュミレーションする現実時間[s]'''
-Dleng_X=0
-Dleng_Y=0
-Dleng_Z=0
-'''各軸方向のメッシュ間の距離[cm]'''
-DT=0
-'''微小時間[s]'''
 
 
 
@@ -62,10 +63,10 @@ sTem_B_ZA=np.ones([grid_n-2,3])
 
 sInCon_B_ZB=np.ones([grid_n-2,3])
 sInCon_B_ZA=np.ones([grid_n-2,3])
-'''計算用：手前時間における Z軸方向 1戻り/進み 温度[K] /Inの濃度'''
+'''計算用：手前時間における Z軸方向 1戻り/進み 温度[K] /Inの濃度[N/cm3]'''
 
 
 
 SaveTem=([grid_n,3,SimuTime])
 SaveInCon=([grid_n,3,SimuTime])
-'''保存用 温度/Inの濃度'''
+'''保存用 温度[K]/Inの濃度[N/cm3]'''
