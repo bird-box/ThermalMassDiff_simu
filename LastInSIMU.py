@@ -2,13 +2,16 @@ import numpty as np
 
 '''シュミレーション設定'''
 
-grid_n=0
-'''分割数(n*n*n)'''
+grid_X=0
+grid_Y=0
+grid_Z=0
+
+'''分割数(x*y*x)'''
 SimuTime=0
 '''シュミレーションする現実時間[s]'''
-Dleng_X=0
-Dleng_Y=0
-Dleng_Z=0
+mleng_X=0
+mleng_Y=0
+mleng_Z=0
 '''各軸方向のメッシュ間の距離[cm]'''
 DT=0
 '''微小時間[s]'''
@@ -34,39 +37,60 @@ Density_GaN=0
 
 '''計算用変数'''
 
-Tem_B=np.ones([grid_n,3])
-InCon_B=np.ones([grid_n,3])
-'''記録用：手前時刻における三次元の温度[K]/Inの濃度[N/cm3]'''
-
-Tem_A=np.ones([grid_n,3])
-InCon_A=np.ones([grid_n,3])
-'''記録用：未来時刻における三次元の温度[K]/Inの濃度[N/cm3]'''
 
 
-
-sTem_B_XB=np.ones([grid_n-2,3])
-sTem_B_XA=np.ones([grid_n-2,3])
-
-sInCon_B_XB=np.ones([grid_n-2,3])
-sInCon_B_XA=np.ones([grid_n-2,3])
-'''計算用：手前時間における X軸方向 1戻り/進み 温度[K] /Inの濃度[N/cm3]'''
-
-sTem_B_YB=np.ones([grid_n-2,3])
-sTem_B_YA=np.ones([grid_n-2,3])
-
-sInCon_B_YB=np.ones([grid_n-2,3])
-sInCon_B_YA=np.ones([grid_n-2,3])
-'''計算用：手前時間における Y軸方向 1戻り/進み 温度[K] /Inの濃度[N/cm3]'''
-
-sTem_B_ZB=np.ones([grid_n-2,3])
-sTem_B_ZA=np.ones([grid_n-2,3])
-
-sInCon_B_ZB=np.ones([grid_n-2,3])
-sInCon_B_ZA=np.ones([grid_n-2,3])
-'''計算用：手前時間における Z軸方向 1戻り/進み 温度[K] /Inの濃度[N/cm3]'''
+log=np.ones([grid_X,grid_Y,grid_Z,int(SimuTime/DT)+1,1,1,1,1])
+'''記録用
+    座標(x,y,z):
+    ステップ(時間の指標):
+    温度[K]:
+    熱量輸送速度[1/J*s]:
+    Inの濃度[N/cm3]:
+    In輸送速度[1/N*s]'''
 
 
 
-SaveTem=([grid_n,3,SimuTime])
-SaveInCon=([grid_n,3,SimuTime])
-'''保存用 温度[K]/Inの濃度[N/cm3]'''
+
+'''一時保存変数
+       代入による計算ロスを無くすため、後で消す'''
+
+DInM_XY=np.ones([grid_X-2,grid_Y-2,grid_Z-2,1])
+'''In拡散係数(xy面上)'''
+DInM_Z=np.ones([grid_X-2,grid_Y-2,grid_Z-2,1])
+'''In拡散係数(z方向)'''
+Dq=np.ones([grid_X-2,grid_Y-2,grid_Z-2,1])
+
+A_ND=0
+'''Δt/Δx^2'''
+
+
+
+
+'''計算過程'''
+
+
+for Step in range(int(SimuTime/DT)):
+
+    '''熱移流拡散について'''
+
+    
+    log[2:grid_X-1,2:grid_Y-1,2:grid_Z-1,Step+1,1,0,0,0] = (2-2 *A_ND *DInM_XY) *log[2:grid_X-1,2:grid_Y-1,2:grid_Z-1,Step,1,0,0,0]
+    + A_ND*DInM_XY*( log[1:grid_X-2,2:grid_Y-1,2:grid_Z-1,Step,1,0,0,0] + log[3:grid_X,2:grid_Y-1,2:grid_Z-1,Step,1,0,0,0])
+    '''熱拡散(X)'''
+    -(DT/(2*mleng_X))*log[2:grid_X-1,2:grid_Y-1,2:grid_Z-1,Step,0,1,0,0]* (log[1:grid_X-2,2:grid_Y-1,2:grid_Z-1,Step,1,0,0,0]
+       - log[3:grid_X,2:grid_Y-1,2:grid_Z-1,Step+1,1,0,0,0])
+    '''熱移流(X)'''
+
+    log[2:grid_X-1,2:grid_Y-1,2:grid_Z-1,Step+1,1,0,0,0] = (2-2 *A_ND *DInM_XY) *log[2:grid_X-1,2:grid_Y-1,2:grid_Z-1,Step,1,0,0,0]
+    + A_ND*DInM_XY*( log[2:grid_X-1,1:grid_Y-2,2:grid_Z-1,Step,1,0,0,0] + log[2:grid_X-1,3:grid_Y,2:grid_Z-1,Step,1,0,0,0])
+    '''熱拡散(Y)'''
+    -(DT/(2*mleng_X))*log[2:grid_X-1,2:grid_Y-1,2:grid_Z-1,Step,0,1,0,0]* (log[2:grid_X-1,1:grid_Y-2,2:grid_Z-1,Step,1,0,0,0]
+       - log[2:grid_X-1,3:grid_Y,2:grid_Z-1,Step,1,0,0,0])
+    '''熱移流(Y)'''
+
+    log[2:grid_X-1,2:grid_Y-1,2:grid_Z-1,Step+1,1,0,0,0] = (2-2 *A_ND *DInM_) *log[2:grid_X-1,2:grid_Y-1,2:grid_Z-1,Step,1,0,0,0]
+    + A_ND*DInM_Z*( log[2:grid_X-1,2:grid_Y-1,1:grid_Z-2,Step+1,1,0,0,0] + log[2:grid_X-1,2:grid_Y-1,3:grid_Z,Step,1,0,0,0])
+    '''熱拡散(Z)'''
+    -(DT/(2*mleng_X))*log[2:grid_X-1,2:grid_Y-1,2:grid_Z-1,Step,0,1,0,0]* (log[2:grid_X-1,1:grid_Y-2,2:grid_Z-1,Step,1,0,0,0]
+       - log[2:grid_X-1,2:grid_Y-1,3:grid_Z,Step,1,0,0,0])
+    '''熱移流(Z)'''
