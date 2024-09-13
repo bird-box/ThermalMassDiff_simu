@@ -1,10 +1,11 @@
-import numpty as np
+import numpy as np
 
 '''シュミレーション設定'''
 
 grid_X=0
 grid_Y=0
 grid_Z=0
+
 
 '''分割数(x*y*x)'''
 SimuTime=0
@@ -72,24 +73,24 @@ A_ND=0
 for Step in range(int(SimuTime/DT)):
 
     '''熱移流拡散について'''
+    Dq=0
 
-    
     log[2:grid_X-1,2:grid_Y-1,2:grid_Z-1,Step+1,1,0,0,0] = (2-2 *A_ND *DInM_XY) *log[2:grid_X-1,2:grid_Y-1,2:grid_Z-1,Step,1,0,0,0]
-    + A_ND*DInM_XY*( log[1:grid_X-2,2:grid_Y-1,2:grid_Z-1,Step,1,0,0,0] + log[3:grid_X,2:grid_Y-1,2:grid_Z-1,Step,1,0,0,0])
+    + A_ND*Dq*( log[1:grid_X-2,2:grid_Y-1,2:grid_Z-1,Step,1,0,0,0] + log[3:grid_X,2:grid_Y-1,2:grid_Z-1,Step,1,0,0,0])
     '''熱拡散(X)'''
     -(DT/(2*mleng_X))*log[2:grid_X-1,2:grid_Y-1,2:grid_Z-1,Step,0,1,0,0]* (log[1:grid_X-2,2:grid_Y-1,2:grid_Z-1,Step,1,0,0,0]
        - log[3:grid_X,2:grid_Y-1,2:grid_Z-1,Step+1,1,0,0,0])
     '''熱移流(X)'''
 
     log[2:grid_X-1,2:grid_Y-1,2:grid_Z-1,Step+1,1,0,0,0] = (2-2 *A_ND *DInM_XY) *log[2:grid_X-1,2:grid_Y-1,2:grid_Z-1,Step,1,0,0,0]
-    + A_ND*DInM_XY*( log[2:grid_X-1,1:grid_Y-2,2:grid_Z-1,Step,1,0,0,0] + log[2:grid_X-1,3:grid_Y,2:grid_Z-1,Step,1,0,0,0])
+    + A_ND*Dq*( log[2:grid_X-1,1:grid_Y-2,2:grid_Z-1,Step,1,0,0,0] + log[2:grid_X-1,3:grid_Y,2:grid_Z-1,Step,1,0,0,0])
     '''熱拡散(Y)'''
     -(DT/(2*mleng_X))*log[2:grid_X-1,2:grid_Y-1,2:grid_Z-1,Step,0,1,0,0]* (log[2:grid_X-1,1:grid_Y-2,2:grid_Z-1,Step,1,0,0,0]
        - log[2:grid_X-1,3:grid_Y,2:grid_Z-1,Step,1,0,0,0])
     '''熱移流(Y)'''
 
     log[2:grid_X-1,2:grid_Y-1,2:grid_Z-1,Step+1,1,0,0,0] = (2-2 *A_ND *DInM_) *log[2:grid_X-1,2:grid_Y-1,2:grid_Z-1,Step,1,0,0,0]
-    + A_ND*DInM_Z*( log[2:grid_X-1,2:grid_Y-1,1:grid_Z-2,Step+1,1,0,0,0] + log[2:grid_X-1,2:grid_Y-1,3:grid_Z,Step,1,0,0,0])
+    + A_ND*Dq*( log[2:grid_X-1,2:grid_Y-1,1:grid_Z-2,Step+1,1,0,0,0] + log[2:grid_X-1,2:grid_Y-1,3:grid_Z,Step,1,0,0,0])
     '''熱拡散(Z)'''
     -(DT/(2*mleng_X))*log[2:grid_X-1,2:grid_Y-1,2:grid_Z-1,Step,0,1,0,0]* (log[2:grid_X-1,1:grid_Y-2,2:grid_Z-1,Step,1,0,0,0]
        - log[2:grid_X-1,2:grid_Y-1,3:grid_Z,Step,1,0,0,0])
