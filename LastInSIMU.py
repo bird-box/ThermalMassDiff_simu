@@ -217,5 +217,28 @@ for Step in range(int(SimuTime/DT)):
        - log[2:grid_X-1,2:grid_Y-1,3:grid_Z,Step+1,0,0,1,0])
     '''物質移流(Z)''' 
 
+　import os  # ファイルパス操作用に追加
 
+# --- 既存のコードの冒頭に以下を追加 ---
+output_dir = "output"
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+
+# --- (中略：既存の物理計算ロジック) ---
+
+# --- 既存のコードの最後（ループ終了後）に以下を追加 ---
+
+# 計算結果の保存
+# np.savez_compressed を使うことで、巨大な配列も効率的に圧縮して保存できます
+save_path = os.path.join(output_dir, "simulation_results.npz")
+
+np.savez_compressed(
+    save_path, 
+    log_data=log,      # 温度、熱流速、In濃度などの多次元データ
+    gan_data=Logsub    # GaN濃度のデータ
+)
+
+print(f"Simulation finished successfully.")
+print(f"Results saved to: {save_path}")
+print("You can load this data using: data = np.load('output/simulation_results.npz')")
    
