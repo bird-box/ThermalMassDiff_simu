@@ -16,4 +16,4 @@
 - **応用先**: 電子機器の筐体設計における放熱シミュレーションや物理モデリングの習作として開発。
 
 ## 使用言語
-- Python (NumPy, SciPy, Matplotlib)
+- Python (NumPy, os)
